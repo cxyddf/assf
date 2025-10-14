@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "name": "李白",
+    "dynasty": "唐",
+    "description": "唐代伟大的浪漫主义诗人，被后人誉为'诗仙'。",
+    "poemCount": 50
+  },
+  {
+    "id": 2,
+    "name": "孟浩然",
+    "dynasty": "唐",
+    "description": "唐代著名的山水田园派诗人。",
+    "poemCount": 30
+  },
+  {
+    "id": 3,
+    "name": "王之涣",
+    "dynasty": "唐",
+    "description": "唐代边塞诗人，以《登鹳雀楼》闻名。",
+    "poemCount": 15
+  },
+  {
+    "id": 4,
+    "name": "苏轼",
+    "dynasty": "宋",
+    "description": "北宋文学家、书画家，唐宋八大家之一。",
+    "poemCount": 45
+  },
+  {
+    "id": 5,
+    "name": "李清照",
+    "dynasty": "宋",
+    "description": "宋代著名女词人，婉约派代表。",
+    "poemCount": 35
+  },
+  {
+    "id": 6,
+    "name": "柳宗元",
+    "dynasty": "唐",
+    "description": "唐代文学家、哲学家，唐宋八大家之一。",
+    "poemCount": 25
+  },
+  {
+    "id": 7,
+    "name": "王维",
+    "dynasty": "唐",
+    "description": "唐代著名诗人、画家，被誉为'诗佛'。",
+    "poemCount": 40
+  },
+  {
+    "id": 8,
+    "name": "杜牧",
+    "dynasty": "唐",
+    "description": "晚唐著名诗人，与李商隐并称'小李杜'。",
+    "poemCount": 35
+  }
+]
