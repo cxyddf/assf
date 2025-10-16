@@ -144,9 +144,7 @@ export const usePoetryStore = defineStore('poetry', () => {
     error.value = null
     try {
       // 从Supabase获取诗词数据
-      console.log('开始从Supabase加载诗词数据...')
       const data = await supabaseService.fetchData('poetry')
-      console.log('从Supabase获取到诗词数据:', data.length, '条')
       poems.value = data.map(item => ({
         id: item.id.toString(),
         title: item.title,
@@ -159,7 +157,6 @@ export const usePoetryStore = defineStore('poetry', () => {
         appreciation: item.appreciation,
         popularity: item.popularity || 0
       }))
-      console.log('诗词数据映射完成，poems.value.length:', poems.value.length)
     } catch (err) {
       error.value = '加载诗词数据失败'
       logger.error('加载诗词数据失败:', err)
