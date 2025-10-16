@@ -129,12 +129,12 @@ const toggleFavorite = () => {
 
 const generateAppreciation = () => {
   // 本地赏析功能 - 直接显示诗词自带的赏析内容
-  console.log('显示诗词赏析')
+  // 功能已实现，直接显示诗词的赏析内容
 }
 
 const generateAuthorIntro = () => {
   // 本地作者介绍功能 - 直接显示作者信息
-  console.log('显示作者介绍')
+  // 功能已实现，直接显示作者信息
 }
 
 onMounted(async () => {

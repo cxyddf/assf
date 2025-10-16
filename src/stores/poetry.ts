@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { Poem, Author } from '../types'
 import { supabaseService } from '../services/supabase'
+import { logger } from '../utils/logger'
 
 export const usePoetryStore = defineStore('poetry', () => {
   // 状态
@@ -165,7 +166,7 @@ export const usePoetryStore = defineStore('poetry', () => {
       }))
     } catch (err) {
       error.value = '加载诗词数据失败'
-      console.error('加载诗词数据失败:', err)
+      logger.error('加载诗词数据失败:', err)
       // 如果Supabase连接失败，使用本地数据作为后备
       try {
         const response = await import('../data/poems.json')
@@ -174,7 +175,7 @@ export const usePoetryStore = defineStore('poetry', () => {
           id: poem.id.toString()
         }))
       } catch (localError) {
-        console.error('本地数据加载也失败:', localError)
+        logger.error('本地数据加载也失败:', localError)
       }
     } finally {
       loading.value = false
@@ -195,7 +196,7 @@ export const usePoetryStore = defineStore('poetry', () => {
       }))
     } catch (err) {
       error.value = '加载作者数据失败'
-      console.error('加载作者数据失败:', err)
+      logger.error('加载作者数据失败:', err)
       // 如果Supabase连接失败，使用本地数据作为后备
       try {
         const response = await import('../data/authors.json')
@@ -207,7 +208,7 @@ export const usePoetryStore = defineStore('poetry', () => {
           poemCount: author.poemCount
         }))
       } catch (localError) {
-        console.error('本地数据加载也失败:', localError)
+        logger.error('本地数据加载也失败:', localError)
       }
     }
   }
@@ -244,7 +245,7 @@ export const usePoetryStore = defineStore('poetry', () => {
         favorites.value.add(poemId)
       }
     } catch (error) {
-      console.error('收藏操作失败:', error)
+      logger.error('收藏操作失败:', error)
       // 失败时回退到localStorage
       if (favorites.value.has(poemId)) {
         favorites.value.delete(poemId)
@@ -262,7 +263,7 @@ export const usePoetryStore = defineStore('poetry', () => {
       const favoriteIds = data.map(item => item.poem_id)
       favorites.value = new Set(favoriteIds)
     } catch (error) {
-      console.error('从数据库加载收藏失败:', error)
+      logger.error('从数据库加载收藏失败:', error)
       // 失败时回退到localStorage
       try {
         const saved = localStorage.getItem('poetry-favorites')
@@ -270,7 +271,7 @@ export const usePoetryStore = defineStore('poetry', () => {
           favorites.value = new Set(JSON.parse(saved))
         }
       } catch (localError) {
-        console.error('从localStorage加载收藏失败:', localError)
+        logger.error('从localStorage加载收藏失败:', localError)
       }
     }
   }
