@@ -78,9 +78,10 @@ const getContentPreview = (content: string) => {
 <style scoped>
 .poetry-card {
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
   border-radius: 8px;
+  animation: fadeInUp 0.6s ease-out;
 }
 
 .poetry-card:hover {
@@ -163,5 +164,17 @@ const getContentPreview = (content: string) => {
   gap: 4px;
   color: #ffa500;
   font-size: 14px;
+}
+
+/* 动画定义 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

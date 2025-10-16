@@ -28,7 +28,9 @@ export const usePoetryStore = defineStore('poetry', () => {
     // 依赖refreshTrigger来触发重新计算
     refreshTrigger.value
     // 从实际诗词库中获取热门诗词
-    if (poems.value.length === 0) return getInitialPopularPoems(6)
+    if (poems.value.length === 0) {
+      return getInitialPopularPoems(6)
+    }
     
     // 按热度排序并取前6首
     return [...poems.value]
@@ -169,6 +171,8 @@ export const usePoetryStore = defineStore('poetry', () => {
         }))
       } catch (localError) {
         logger.error('本地数据加载也失败:', localError)
+        // 使用硬编码的后备数据
+        poems.value = getInitialPopularPoems(20)
       }
     } finally {
       loading.value = false
@@ -202,6 +206,12 @@ export const usePoetryStore = defineStore('poetry', () => {
         }))
       } catch (localError) {
         logger.error('本地数据加载也失败:', localError)
+        // 使用硬编码的后备数据
+        authors.value = [
+          { id: '1', name: '李白', dynasty: '唐', description: '唐代伟大的浪漫主义诗人', poemCount: 50 },
+          { id: '2', name: '杜甫', dynasty: '唐', description: '唐代伟大的现实主义诗人', poemCount: 40 },
+          { id: '3', name: '苏轼', dynasty: '宋', description: '宋代文学家、书画家', poemCount: 35 }
+        ]
       }
     }
   }
@@ -271,6 +281,10 @@ export const usePoetryStore = defineStore('poetry', () => {
 
   // 初始化时加载收藏
   loadFavorites()
+  
+  // 初始化时加载数据
+  loadPoems()
+  loadAuthors()
 
   // 刷新热门诗词 - 从本地诗词库随机选择
   const refreshPopularPoems = () => {

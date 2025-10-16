@@ -68,6 +68,13 @@
           </div>
           <div v-if="popularPoems.length === 0" class="empty-state">
             <el-empty description="暂无热门诗词" />
+            <div style="margin-top: 20px; color: #666; font-size: 14px;">
+              <p>调试信息:</p>
+              <p>诗词总数: {{ poetryStore.poems.length }}</p>
+              <p>热门诗词数: {{ popularPoems.length }}</p>
+              <p>加载状态: {{ poetryStore.loading ? '加载中' : '已完成' }}</p>
+              <p>错误信息: {{ poetryStore.error || '无' }}</p>
+            </div>
           </div>
         </section>
 
@@ -107,6 +114,16 @@
                 <h3 class="author-name">{{ author.name }}</h3>
                 <p class="author-dynasty">{{ author.dynasty }}</p>
                 <p class="author-works">作品数: {{ author.poemCount }}</p>
+              </div>
+            </div>
+            <div v-if="displayData.length === 0" class="empty-state">
+              <el-empty description="暂无作者数据" />
+              <div style="margin-top: 20px; color: #666; font-size: 14px;">
+                <p>调试信息:</p>
+                <p>作者总数: {{ poetryStore.authors.length }}</p>
+                <p>显示数据数: {{ displayData.length }}</p>
+                <p>加载状态: {{ poetryStore.loading ? '加载中' : '已完成' }}</p>
+                <p>错误信息: {{ poetryStore.error || '无' }}</p>
               </div>
             </div>
           </div>
@@ -227,6 +244,19 @@ onMounted(async () => {
 
 .search-input {
   width: 300px;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .search-input {
+    width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-input {
+    width: 200px;
+  }
 }
 
 .main-content {
@@ -262,6 +292,20 @@ onMounted(async () => {
   margin-bottom: 40px;
 }
 
+@media (max-width: 768px) {
+  .poem-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .poem-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
 .dynasty-buttons {
   display: flex;
   gap: 15px;
@@ -287,6 +331,20 @@ onMounted(async () => {
   margin: 0 auto;
 }
 
+@media (max-width: 768px) {
+  .authors-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .authors-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
 .author-card {
   background: white;
   border-radius: 12px;
@@ -295,8 +353,9 @@ onMounted(async () => {
   align-items: center;
   gap: 15px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeInUp 0.6s ease-out;
 }
 
 .author-card:hover {
@@ -339,4 +398,51 @@ onMounted(async () => {
   font-size: 14px;
   margin: 0;
 }
+
+/* 动画定义 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 为诗词卡片添加动画 */
+.poem-grid .poetry-card {
+  animation: fadeInUp 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+.poem-grid .poetry-card:nth-child(1) { animation-delay: 0.1s; }
+.poem-grid .poetry-card:nth-child(2) { animation-delay: 0.2s; }
+.poem-grid .poetry-card:nth-child(3) { animation-delay: 0.3s; }
+.poem-grid .poetry-card:nth-child(4) { animation-delay: 0.4s; }
+.poem-grid .poetry-card:nth-child(5) { animation-delay: 0.5s; }
+.poem-grid .poetry-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* 为作者卡片添加动画 */
+.authors-grid .author-card {
+  animation: fadeInUp 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+.authors-grid .author-card:nth-child(1) { animation-delay: 0.1s; }
+.authors-grid .author-card:nth-child(2) { animation-delay: 0.2s; }
+.authors-grid .author-card:nth-child(3) { animation-delay: 0.3s; }
+.authors-grid .author-card:nth-child(4) { animation-delay: 0.4s; }
+.authors-grid .author-card:nth-child(5) { animation-delay: 0.5s; }
+.authors-grid .author-card:nth-child(6) { animation-delay: 0.6s; }
 </style>
