@@ -37,13 +37,6 @@ export const usePoetryStore = defineStore('poetry', () => {
   })
 
   const getInitialPopularPoems = (count: number) => {
-    // 如果诗词库中有数据，使用实际数据
-    if (poems.value.length > 0) {
-      return [...poems.value]
-        .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
-        .slice(0, count)
-    }
-    
     // 后备数据，使用与数据库匹配的ID格式
     const initialPoems = [
       {
@@ -151,7 +144,9 @@ export const usePoetryStore = defineStore('poetry', () => {
     error.value = null
     try {
       // 从Supabase获取诗词数据
+      console.log('开始从Supabase加载诗词数据...')
       const data = await supabaseService.fetchData('poetry')
+      console.log('从Supabase获取到诗词数据:', data.length, '条')
       poems.value = data.map(item => ({
         id: item.id.toString(),
         title: item.title,
@@ -164,6 +159,7 @@ export const usePoetryStore = defineStore('poetry', () => {
         appreciation: item.appreciation,
         popularity: item.popularity || 0
       }))
+      console.log('诗词数据映射完成，poems.value.length:', poems.value.length)
     } catch (err) {
       error.value = '加载诗词数据失败'
       logger.error('加载诗词数据失败:', err)

@@ -19,8 +19,15 @@
 
     <!-- 主要内容 -->
     <div class="main-content">
+      <!-- 加载状态 -->
+      <div v-if="poetryStore.loading" class="loading-container">
+        <el-loading :loading="true" text="加载中...">
+          <div style="height: 200px;"></div>
+        </el-loading>
+      </div>
+      
       <!-- 推荐页面布局 -->
-      <template v-if="currentCategory === 'recommend'">
+      <template v-else-if="currentCategory === 'recommend'">
         <!-- 每日推荐 -->
         <section class="daily-section">
           <div class="section-header">
@@ -61,6 +68,7 @@
           </div>
           <div v-if="popularPoems.length === 0" class="empty-state">
             <el-empty description="暂无热门诗词" />
+            <p>调试信息: poems数量={{ poetryStore.poems.length }}, popularPoems数量={{ popularPoems.length }}</p>
           </div>
         </section>
 
@@ -192,8 +200,11 @@ const goToAuthorDetail = (authorName: string) => {
 }
 
 onMounted(async () => {
+  console.log('Home组件挂载，开始加载数据...')
   await poetryStore.loadPoems()
+  console.log('诗词数据加载完成，数量:', poetryStore.poems.length)
   await poetryStore.loadAuthors()
+  console.log('作者数据加载完成，数量:', poetryStore.authors.length)
 })
 </script>
 
