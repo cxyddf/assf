@@ -21,7 +21,18 @@
       <div v-else class="poem-detail">
         <!-- 诗词基本信息 -->
         <div class="poem-header">
-          <h1 class="poem-title">{{ poem.title }}</h1>
+          <div class="title-section">
+            <h1 class="poem-title">{{ poem.title }}</h1>
+            <el-button 
+              class="favorite-btn"
+              :icon="isFavorite ? StarFilled : Star"
+              :type="isFavorite ? 'primary' : 'default'"
+              size="large"
+              @click="toggleFavorite"
+            >
+              {{ isFavorite ? '已收藏' : '收藏' }}
+            </el-button>
+          </div>
           <div class="poem-meta">
             <span class="author">{{ poem.author }}</span>
             <span class="dynasty">{{ poem.dynasty }}</span>
@@ -85,7 +96,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { usePoetryStore } from '../stores/poetry'
-import { ArrowLeft, Search } from '@element-plus/icons-vue'
+import { ArrowLeft, Search, Star, StarFilled } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -94,7 +105,7 @@ const poetryStore = usePoetryStore()
 const loading = ref(false)
 const activeNames = ref(['annotation', 'appreciation'])
 
-const poemId = computed(() => parseInt(route.params.id as string))
+const poemId = computed(() => route.params.id as string)
 const poem = computed(() => poetryStore.getPoemById(poemId.value))
 const author = computed(() => {
   if (poem.value) {
@@ -102,6 +113,19 @@ const author = computed(() => {
   }
   return null
 })
+
+const isFavorite = computed(() => {
+  if (poem.value) {
+    return poetryStore.isFavorite(poem.value.id)
+  }
+  return false
+})
+
+const toggleFavorite = () => {
+  if (poem.value) {
+    poetryStore.toggleFavorite(poem.value.id)
+  }
+}
 
 const generateAppreciation = () => {
   // 本地赏析功能 - 直接显示诗词自带的赏析内容
@@ -141,6 +165,7 @@ onMounted(async () => {
   backdrop-filter: blur(10px);
   border-bottom: 1px solid #e8e8e8;
   padding: 0 20px;
+  position: relative;
 }
 
 .header-content {
@@ -148,11 +173,19 @@ onMounted(async () => {
   margin: 0 auto;
   display: flex;
   align-items: center;
+  justify-content: center;
   height: 60px;
+  position: relative;
+}
+
+.header-content .el-button {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .page-title {
-  margin-left: 20px;
   color: var(--text-primary);
 }
 
@@ -182,6 +215,18 @@ onMounted(async () => {
 .poem-header {
   text-align: center;
   margin-bottom: 40px;
+}
+
+.title-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.favorite-btn {
+  margin-left: 20px;
 }
 
 .poem-title {

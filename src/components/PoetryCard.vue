@@ -29,9 +29,19 @@
             +{{ (poem.tags?.length || 0) - 2 }}
           </span>
         </div>
-        <div class="popularity" v-if="poem.popularity">
-          <el-icon><Star /></el-icon>
-          <span>{{ poem.popularity }}</span>
+        <div class="footer-right">
+          <div class="popularity" v-if="poem.popularity">
+            <el-icon><Star /></el-icon>
+            <span>{{ poem.popularity }}</span>
+          </div>
+          <el-button 
+            class="favorite-btn"
+            :icon="isFavorite ? StarFilled : Star"
+            :type="isFavorite ? 'primary' : 'default'"
+            size="small"
+            @click.stop="toggleFavorite"
+            circle
+          />
         </div>
       </div>
     </template>
@@ -39,16 +49,24 @@
 </template>
 
 <script setup lang="ts">
-import { Star } from '@element-plus/icons-vue'
+import { Star, StarFilled } from '@element-plus/icons-vue'
+import { usePoetryStore } from '../stores/poetry'
 import type { Poem } from '../types'
 
-defineProps<{
+const props = defineProps<{
   poem: Poem
 }>()
 
 defineEmits<{
   click: []
 }>()
+
+const poetryStore = usePoetryStore()
+const isFavorite = $computed(() => poetryStore.isFavorite(props.poem.id))
+
+const toggleFavorite = () => {
+  poetryStore.toggleFavorite(props.poem.id)
+}
 
 const getContentPreview = (content: string) => {
   // 取前两句作为预览
@@ -114,6 +132,18 @@ const getContentPreview = (content: string) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.favorite-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
 }
 
 .poem-tags {
