@@ -29,24 +29,7 @@
             {{ message.content }}
           </div>
           
-          <!-- 异步任务状态显示 -->
-          <div v-if="message.taskId" class="task-status">
-            <div class="task-info">
-              <span class="task-id">任务ID: {{ message.taskId }}</span>
-              <span class="task-status-badge" :class="`status-${message.taskStatus}`">
-                {{ getStatusText(message.taskStatus) }}
-              </span>
-            </div>
-            <div v-if="message.taskStatus === 'processing'" class="task-progress">
-              <div class="progress-bar">
-                <div class="progress-fill" :style="{ width: (message.progress || 0) + '%' }"></div>
-              </div>
-              <span class="progress-text">{{ message.progress || 0 }}%</span>
-            </div>
-            <div v-if="message.estimatedCompletionTime" class="task-eta">
-              预计完成: {{ formatTime(message.estimatedCompletionTime) }}
-            </div>
-          </div>
+          <!-- 任务元信息不再显示 -->
           
           <div v-if="message.rawResponse" class="raw-response">
             <pre class="raw-json">{{ formatRawJson(message.rawResponse) }}</pre>
@@ -243,21 +226,40 @@ const formatAnalysisContent = (response: any): string => {
   return JSON.stringify(response, null, 2)
 }
 
-// 以JSON形式完整展示返回内容
+// 以JSON形式完整展示返回内容，同时过滤任务元字段
 const formatRawJson = (response: any): string => {
   try {
     if (typeof response === 'string') {
       // 尝试解析为JSON，否则原样返回
       try {
-        return JSON.stringify(JSON.parse(response), null, 2)
+        const parsed = JSON.parse(response)
+        const cleaned = removeMetaFields(parsed)
+        return JSON.stringify(cleaned, null, 2)
       } catch {
         return response
       }
     }
-    return JSON.stringify(response, null, 2)
+    const cleaned = removeMetaFields(response)
+    return JSON.stringify(cleaned, null, 2)
   } catch {
     return String(response)
   }
+}
+
+// 移除不需要显示的元信息字段
+const removeMetaFields = (data: any): any => {
+  if (Array.isArray(data)) {
+    return data.map(item => removeMetaFields(item))
+  }
+  if (data && typeof data === 'object') {
+    const { task_id, taskId, id, timestamp, created_at, updated_at, ...rest } = data as any
+    const result: any = {}
+    for (const [k, v] of Object.entries(rest)) {
+      result[k] = removeMetaFields(v)
+    }
+    return result
+  }
+  return data
 }
 
 // 重试功能
