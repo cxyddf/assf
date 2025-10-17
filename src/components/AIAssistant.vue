@@ -49,7 +49,7 @@
           </div>
           
           <div v-if="message.rawResponse" class="raw-response">
-            <div v-html="formatRawResponse(message.rawResponse)"></div>
+            <pre class="raw-json">{{ formatRawJson(message.rawResponse) }}</pre>
           </div>
           
           <div v-if="message.showRetryOptions" class="retry-options">
@@ -164,7 +164,7 @@ const handleSend = async () => {
     const resultMessage: AIMessage = {
       id: Date.now().toString(),
       type: 'assistant',
-      content: `✅ 诗词分析完成\n\n${formatAnalysisContent(analysisResult)}`,
+      content: `${formatAnalysisContent(analysisResult)}`,
       timestamp: new Date(),
       rawResponse: analysisResult
     }
@@ -243,29 +243,21 @@ const formatAnalysisContent = (response: any): string => {
   return JSON.stringify(response, null, 2)
 }
 
-// 格式化原始响应为HTML
-const formatRawResponse = (response: any): string => {
-  if (typeof response === 'string') {
-    return response
-  }
-  
-  if (response && typeof response === 'object') {
-    // 如果是JSON对象，格式化为可读的HTML
-    let html = ''
-    
-    for (const [key, value] of Object.entries(response)) {
-      if (value && typeof value === 'string' && value.length > 0) {
-        html += `<div class="response-section">
-          <h4>${key}</h4>
-          <p>${value}</p>
-        </div>`
+// 以JSON形式完整展示返回内容
+const formatRawJson = (response: any): string => {
+  try {
+    if (typeof response === 'string') {
+      // 尝试解析为JSON，否则原样返回
+      try {
+        return JSON.stringify(JSON.parse(response), null, 2)
+      } catch {
+        return response
       }
     }
-    
-    return html || JSON.stringify(response, null, 2)
+    return JSON.stringify(response, null, 2)
+  } catch {
+    return String(response)
   }
-  
-  return JSON.stringify(response, null, 2)
 }
 
 // 重试功能
@@ -531,6 +523,15 @@ onUnmounted(() => {
   border-left: 4px solid #D2B48C;
   max-height: 400px;
   overflow-y: auto;
+}
+
+.raw-json {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 12px;
+  line-height: 1.6;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 .response-section {
