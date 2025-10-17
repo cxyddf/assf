@@ -1,5 +1,8 @@
 <template>
   <div class="home">
+    <!-- AI助手 -->
+    <AIAssistant />
+    
     <!-- 搜索栏 -->
     <div class="search-section">
       <div class="search-container">
@@ -104,7 +107,7 @@
           <!-- 作者列表 -->
           <div v-if="currentCategory === 'authors'" class="authors-grid">
             <div 
-              v-for="author in displayData" 
+              v-for="author in poetryStore.authors.slice(0, 20)" 
               :key="author.id"
               class="author-card"
               @click="goToAuthorDetail(author.name)"
@@ -116,12 +119,12 @@
                 <p class="author-works">作品数: {{ author.poemCount }}</p>
               </div>
             </div>
-            <div v-if="displayData.length === 0" class="empty-state">
+            <div v-if="poetryStore.authors.length === 0" class="empty-state">
               <el-empty description="暂无作者数据" />
               <div style="margin-top: 20px; color: #666; font-size: 14px;">
                 <p>调试信息:</p>
                 <p>作者总数: {{ poetryStore.authors.length }}</p>
-                <p>显示数据数: {{ displayData.length }}</p>
+                <p>显示数据数: {{ poetryStore.authors.length }}</p>
                 <p>加载状态: {{ poetryStore.loading ? '加载中' : '已完成' }}</p>
                 <p>错误信息: {{ poetryStore.error || '无' }}</p>
               </div>
@@ -149,6 +152,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { usePoetryStore } from '../stores/poetry'
 import { Search, Refresh } from '@element-plus/icons-vue'
 import PoetryCard from '../components/PoetryCard.vue'
+import AIAssistant from '../components/AIAssistant.vue'
 
 const router = useRouter()
 const route = useRoute()

@@ -1,0 +1,118 @@
+{
+  "name": "诗词赏析AI助手工作流",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "/api/poetry-analysis",
+        "authentication": "none"
+      },
+      "id": "1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const { poetry, options } = $input.first().json;\n\nif (!poetry || typeof poetry !== 'string') {\n  throw new Error('请输入有效的诗词内容');\n}\n\nconst aiRequest = {\n  poetry: poetry.trim(),\n  options: options || {}\n};\n\nreturn [{ json: aiRequest }];"
+      },
+      "id": "2",
+      "name": "验证输入数据",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "credentialType": "openAiApi",
+        "model": "gpt-3.5-turbo",
+        "options": {},
+        "maxTokens": 2000,
+        "temperature": 0.7,
+        "messages": [
+          {
+            "role": "system",
+            "content": "你是一位专业的诗词赏析专家，擅长分析古典诗词的意境、修辞手法和历史文化背景。请对用户提供的诗词进行全面的赏析，按照以下结构返回JSON格式的结果：\n\n{\n  \"translation\": \"诗词翻译\",\n  \"theme\": \"主题思想\",\n  \"artistic_features\": \"艺术特色\",\n  \"historical_context\": \"历史背景\", \n  \"author_insights\": \"作者解读\",\n  \"appreciation\": \"整体赏析\"\n}\n\n请确保分析准确、专业，语言优美流畅。"
+          },
+          {
+            "role": "user",
+            "content": "请分析以下诗词：{{ $json.poetry }}"
+          }
+        ]
+      },
+      "id": "3",
+      "name": "调用AI分析",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const aiResponse = $input.first().json;\n\nlet analysisResult;\ntry {\n  const content = aiResponse.choices[0].message.content;\n  const jsonMatch = content.match(/\\{[\\s\\S]*\\}/);\n  if (jsonMatch) {\n    analysisResult = JSON.parse(jsonMatch[0]);\n  } else {\n    analysisResult = {\n      translation: \"翻译内容\",\n      theme: \"主题分析\",\n      artistic_features: \"艺术特色分析\",\n      historical_context: \"历史背景\",\n      author_insights: \"作者解读\",\n      appreciation: content\n    };\n  }\n} catch (error) {\n  analysisResult = {\n    error: \"分析失败，请重试\",\n    raw_response: aiResponse\n  };\n}\n\nconst response = {\n  success: true,\n  data: analysisResult,\n  timestamp: new Date().toISOString()\n};\n\nreturn [{ json: response }];"
+      },
+      "id": "4",
+      "name": "处理AI响应",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "5",
+      "name": "返回结果",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "验证输入数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "验证输入数据": {
+      "main": [
+        [
+          {
+            "node": "调用AI分析",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "调用AI分析": {
+      "main": [
+        [
+          {
+            "node": "处理AI响应",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "处理AI响应": {
+      "main": [
+        [
+          {
+            "node": "返回结果",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "name": "诗词赏析AI助手",
+  "version": "1.0.0",
+  "description": "AI聊天助手，提供诗词赏析功能",
+  "features": {
+    "poetry_analysis": {
+      "enabled": true,
+      "description": "诗词赏析功能",
+      "capabilities": [
+        "诗词翻译",
+        "意境分析",
+        "修辞手法解析",
+        "历史背景介绍",
+        "作者生平解读"
+      ]
+    },
+    "chat": {
+      "enabled": true,
+      "description": "基础聊天功能",
+      "capabilities": [
+        "自然对话",
+        "上下文理解",
+        "多轮对话"
+      ]
+    }
+  },
+  "prompts": {
+    "poetry_analysis": {
+      "system_prompt": "你是一位专业的诗词赏析专家，擅长分析古典诗词的意境、修辞手法和历史文化背景。请对用户提供的诗词进行全面的赏析。",
+      "user_template": "请对以下诗词进行赏析：\n{poetry_content}",
+      "response_structure": {
+        "translation": "诗词翻译",
+        "theme": "主题思想",
+        "artistic_features": "艺术特色",
+        "historical_context": "历史背景",
+        "author_insights": "作者解读",
+        "appreciation": "整体赏析"
+      }
+    }
+  },
+  "ui_config": {
+    "position": "bottom-right",
+    "theme": "classical",
+    "animations": {
+      "open": "slide-up",
+      "close": "slide-down"
+    },
+    "colors": {
+      "primary": "#8B4513",
+      "secondary": "#D2B48C",
+      "accent": "#A0522D"
+    }
+  },
+  "api_config": {
+    "endpoint": "/api/ai/poetry-analysis",
+    "timeout": 30000,
+    "retry_attempts": 3
+  },
+  "limitations": {
+    "max_poetry_length": 1000,
+    "max_response_length": 2000,
+    "rate_limit": {
+      "requests_per_minute": 10,
+      "requests_per_hour": 60
+    }
+  }
+}

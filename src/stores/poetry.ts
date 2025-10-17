@@ -111,14 +111,7 @@ export const usePoetryStore = defineStore('poetry', () => {
     return initialPoems.slice(0, Math.min(count, initialPoems.length))
   }
 
-  // 获取随机诗词（本地随机选择）
-  const getRandomPoems = (count: number) => {
-    if (poems.value.length === 0) return getInitialPopularPoems(count)
-    
-    // 从本地诗词库中随机选择
-    const shuffled = [...poems.value].sort(() => 0.5 - Math.random())
-    return shuffled.slice(0, count)
-  }
+
 
   const filteredPoems = computed(() => {
     if (!searchKeyword.value) return poems.value
@@ -147,7 +140,7 @@ export const usePoetryStore = defineStore('poetry', () => {
     try {
       // 从Supabase获取诗词数据
       const data = await supabaseService.fetchData('poetry')
-      poems.value = data.map(item => ({
+      poems.value = data.map((item: any) => ({
         id: item.id.toString(),
         title: item.title,
         author: item.author,
@@ -184,12 +177,12 @@ export const usePoetryStore = defineStore('poetry', () => {
     try {
       // 从Supabase获取作者数据
       const data = await supabaseService.fetchData('authors')
-      authors.value = data.map(item => ({
+      authors.value = data.map((item: any) => ({
         id: item.id.toString(),
         name: item.name,
         dynasty: item.dynasty,
         description: item.description || '',
-        poemCount: (item as any).works_count || 0
+        poemCount: item.works_count || 0
       }))
     } catch (err) {
       error.value = '加载作者数据失败'
@@ -263,7 +256,7 @@ export const usePoetryStore = defineStore('poetry', () => {
     try {
       // 从Supabase加载收藏
       const data = await supabaseService.fetchData('user_favorites')
-      const favoriteIds = data.map(item => item.poem_id)
+      const favoriteIds = data.map((item: any) => item.poem_id)
       favorites.value = new Set(favoriteIds)
     } catch (error) {
       logger.error('从数据库加载收藏失败:', error)

@@ -49,6 +49,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Star, StarFilled } from '@element-plus/icons-vue'
 import { usePoetryStore } from '../stores/poetry'
 import type { Poem } from '../types'
@@ -62,7 +63,7 @@ defineEmits<{
 }>()
 
 const poetryStore = usePoetryStore()
-const isFavorite = $computed(() => poetryStore.isFavorite(props.poem.id))
+const isFavorite = computed(() => poetryStore.isFavorite(props.poem.id))
 
 const toggleFavorite = () => {
   poetryStore.toggleFavorite(props.poem.id)
