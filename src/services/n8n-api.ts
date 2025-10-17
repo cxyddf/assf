@@ -4,7 +4,7 @@ import { logger } from '../utils/logger'
 // n8n配置
 const N8N_BASE_URL = 'https://ykyyln.app.n8n.cloud' // n8n服务地址
 const WEBHOOK_PATH = '/webhook/api/poetry-analysis' // Webhook路径
-const CALLBACK_URL = 'http://localhost:5173/api/callback' // 回调URL（需要配置）
+const CALLBACK_URL = 'https://strong-baklava-a0b6e8.netlify.app/.netlify/functions/callback' // Netlify Function回调URL
 
 export interface PoetryAnalysisRequest {
   poetry: string
