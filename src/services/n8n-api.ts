@@ -84,10 +84,13 @@ export class N8NApiService {
       // 检查是否是异步工作流启动响应
       if (result.message === "Workflow was started") {
         logger.warn('n8n工作流已启动，开始轮询获取完整结果...')
-        return await this.pollForCompleteResult(request.poetry, 6) // 尝试6次轮询
+        const completeResult = await this.pollForCompleteResult(request.poetry, 10) // 增加轮询次数到10次
+        logger.info('轮询获取到完整结果:', completeResult)
+        return completeResult
       }
       
       // 直接返回n8n工作流的结果
+      logger.info('直接获取到完整结果:', result)
       return result
     } catch (error) {
       logger.error('调用n8n API失败:', error)
@@ -98,13 +101,13 @@ export class N8NApiService {
   /**
    * 轮询获取完整的工作流结果
    */
-  private async pollForCompleteResult(poetry: string, maxAttempts: number = 5): Promise<PoetryAnalysisResponse> {
+  private async pollForCompleteResult(poetry: string, maxAttempts: number = 10): Promise<PoetryAnalysisResponse> {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         logger.info(`轮询尝试 ${attempt}/${maxAttempts} 获取完整结果...`)
         
         // 优化等待时间：前几次快速轮询，后面逐渐增加
-        const waitTime = attempt <= 3 ? 2000 : 3000 + (attempt - 3) * 2000 // 2s, 2s, 2s, 3s, 5s, 7s
+        const waitTime = attempt <= 3 ? 3000 : 5000 + (attempt - 3) * 2000 // 3s, 3s, 3s, 5s, 7s, 9s
         await new Promise(resolve => setTimeout(resolve, waitTime))
         
         // 重新请求工作流
@@ -132,16 +135,22 @@ export class N8NApiService {
             return result
           }
           
+          // 检查是否有分析内容（即使success为false）
+          if (result.data && typeof result.data === 'object') {
+            logger.info('轮询获取到包含数据的分析结果')
+            return result
+          }
+          
+          // 如果返回了JSON对象且有内容，也认为成功
+          if (result && typeof result === 'object' && Object.keys(result).length > 0) {
+            logger.info('轮询获取到有效JSON结果')
+            return result
+          }
+          
           // 如果仍然是启动消息，继续轮询
           if (result.message === "Workflow was started") {
             logger.info(`工作流仍在处理中，继续等待... (${attempt}/${maxAttempts})`)
             continue
-          }
-          
-          // 如果返回了其他格式的结果，也认为成功
-          if (result && typeof result === 'object' && !result.message) {
-            logger.info('轮询获取到其他格式的完整结果')
-            return result
           }
           
           // 其他情况，返回结果

@@ -147,8 +147,8 @@ const handleSend = async () => {
   isLoading.value = true
 
   try {
-    // 使用异步模式启动任务
-    const taskResponse = await n8nApiService.startAsyncPoetryAnalysis({
+    // 直接调用同步分析，确保返回完整结果
+    const analysisResult = await n8nApiService.analyzePoetry({
       poetry: userInput.trim(),
       options: {
         include_translation: true,
@@ -157,29 +157,23 @@ const handleSend = async () => {
       }
     })
 
-    // 添加异步任务消息
-    const taskMessage: AIMessage = {
-      id: taskResponse.task_id,
+    // 添加分析结果消息
+    const resultMessage: AIMessage = {
+      id: Date.now().toString(),
       type: 'assistant',
-      content: `🔄 已启动异步分析任务 (ID: ${taskResponse.task_id})`,
+      content: `✅ 诗词分析完成：${userInput.split('\n')[0]}...`,
       timestamp: new Date(),
-      taskId: taskResponse.task_id,
-      taskStatus: taskResponse.status,
-      estimatedCompletionTime: taskResponse.estimated_completion_time,
-      progress: 0
+      rawResponse: analysisResult
     }
-    messages.push(taskMessage)
-
-    // 开始轮询任务状态
-    startTaskPolling(taskResponse.task_id, userInput)
+    messages.push(resultMessage)
 
   } catch (error) {
-    console.error('启动异步任务失败:', error)
+    console.error('诗词分析失败:', error)
     
     const errorMessage: AIMessage = {
       id: (Date.now() + 2).toString(),
       type: 'assistant',
-      content: '抱歉，启动异步分析任务失败，请稍后重试。',
+      content: '抱歉，诗词分析失败，请稍后重试。',
       timestamp: new Date(),
       showRetryOptions: true
     }
@@ -190,59 +184,11 @@ const handleSend = async () => {
 }
 
 /**
- * 开始轮询任务状态
+ * 开始轮询任务状态（保留函数，但不再使用）
  */
 const startTaskPolling = async (taskId: string, userInput: string) => {
-  try {
-    const statusResponse = await n8nApiService.pollTaskStatus(taskId)
-    
-    // 更新消息状态
-    const messageIndex = messages.findIndex(msg => msg.taskId === taskId)
-    if (messageIndex !== -1) {
-      const message = messages[messageIndex]
-      
-      // 更新任务状态
-      message.taskStatus = statusResponse.status
-      message.progress = calculateProgress(statusResponse.status)
-      message.estimatedCompletionTime = statusResponse.updated_at
-      
-      if (statusResponse.status === 'completed' && statusResponse.result) {
-        // 任务完成，显示结果
-        message.content = `✅ 诗词分析完成：${userInput.split('\n')[0]}...`
-        message.rawResponse = statusResponse.result
-        
-        // 清除任务状态显示
-        message.taskStatus = undefined
-        message.progress = undefined
-        message.estimatedCompletionTime = undefined
-      } else if (statusResponse.status === 'failed') {
-        // 任务失败
-        message.content = `❌ 分析任务失败：${statusResponse.error || '未知错误'}`
-        message.showRetryOptions = true
-        message.taskStatus = undefined
-      } else if (statusResponse.status === 'processing') {
-        // 任务处理中，继续轮询
-        message.content = `🔄 正在分析诗词... (进度: ${message.progress}%)`
-        
-        // 设置下一次轮询
-        const timeoutId = setTimeout(() => {
-          startTaskPolling(taskId, userInput)
-        }, 3000) // 3秒后再次轮询
-        
-        activeTasks.set(taskId, timeoutId)
-      }
-    }
-  } catch (error) {
-    console.error(`轮询任务 ${taskId} 状态失败:`, error)
-    
-    // 更新消息显示错误
-    const messageIndex = messages.findIndex(msg => msg.taskId === taskId)
-    if (messageIndex !== -1) {
-      messages[messageIndex].content = '❌ 获取任务状态失败，请检查网络连接'
-      messages[messageIndex].showRetryOptions = true
-      messages[messageIndex].taskStatus = undefined
-    }
-  }
+  // 此函数已不再使用，保留以防需要
+  console.warn('startTaskPolling函数已弃用，使用同步分析模式')
 }
 
 /**
