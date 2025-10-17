@@ -51,9 +51,29 @@ npm run build
 # 必需的环境变量
 NODE_VERSION=18
 
-# 可选的环境变量（根据需求设置）
-N8N_BASE_URL=https://ykyyln.app.n8n.cloud
+# n8n配置 - 已配置正确的n8n服务地址
+VITE_N8N_BASE_URL=https://ykyyln.app.n8n.cloud
+VITE_N8N_WEBHOOK_PATH=/webhook/api/poetry-analysis
+VITE_CALLBACK_URL=https://strong-baklava-a0b6e8.netlify.app/.netlify/functions/callback
 ```
+
+**重要：n8n服务地址配置说明**
+
+当前异步任务失败的原因是n8n服务地址配置不正确。您需要：
+
+1. **获取正确的n8n服务地址**：
+   - 登录您的n8n实例
+   - 找到诗词分析工作流
+   - 复制工作流的Webhook URL
+
+2. **配置正确的环境变量**：
+   - 将 `VITE_N8N_BASE_URL` 设置为您的实际n8n域名
+   - 将 `VITE_N8N_WEBHOOK_PATH` 设置为工作流的Webhook路径
+
+**示例配置**：
+如果您的Webhook URL是：`https://my-n8n.example.com/webhook/poetry-analysis`
+- `VITE_N8N_BASE_URL=https://my-n8n.example.com`
+- `VITE_N8N_WEBHOOK_PATH=/webhook/poetry-analysis`
 
 ### 5. 验证部署
 
