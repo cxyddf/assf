@@ -148,7 +148,7 @@ const handleSend = async () => {
 
   try {
     // 直接调用同步分析，确保返回完整结果
-    const analysisResult = await n8nApiService.analyzePoetry({
+    const response = await n8nApiService.analyzePoetry({
       poetry: userInput.trim(),
       options: {
         include_translation: true,
@@ -157,11 +157,14 @@ const handleSend = async () => {
       }
     })
 
-    // 添加分析结果消息
+    // 正确解析API返回的数据结构
+    const analysisResult = response.success ? response.data : response
+
+    // 添加分析结果消息 - 显示完整分析内容
     const resultMessage: AIMessage = {
       id: Date.now().toString(),
       type: 'assistant',
-      content: `✅ 诗词分析完成：${userInput.split('\n')[0]}...`,
+      content: `✅ 诗词分析完成\n\n${formatAnalysisContent(analysisResult)}`,
       timestamp: new Date(),
       rawResponse: analysisResult
     }
@@ -204,7 +207,43 @@ const calculateProgress = (status: string): number => {
   }
 }
 
-// 格式化原始响应
+// 格式化分析内容为可读文本
+const formatAnalysisContent = (response: any): string => {
+  if (typeof response === 'string') {
+    return response
+  }
+  
+  if (response && typeof response === 'object') {
+    let content = ''
+    
+    // 提取具体的分析内容
+    if (response.poetry_translation) {
+      content += `📖 逐句翻译：\n${response.poetry_translation}\n\n`
+    }
+    if (response.theme_analysis) {
+      content += `🎯 主题思想：\n${response.theme_analysis}\n\n`
+    }
+    if (response.artistic_features) {
+      content += `🎨 艺术特色：\n${response.artistic_features}\n\n`
+    }
+    if (response.historical_context) {
+      content += `📜 历史背景：\n${response.historical_context}\n\n`
+    }
+    if (response.author_insights) {
+      content += `👤 作者见解：\n${response.author_insights}\n\n`
+    }
+    if (response.overall_appreciation) {
+      content += `🌟 整体赏析：\n${response.overall_appreciation}\n\n`
+    }
+    
+    // 如果没有具体内容，返回原始JSON
+    return content.trim() || JSON.stringify(response, null, 2)
+  }
+  
+  return JSON.stringify(response, null, 2)
+}
+
+// 格式化原始响应为HTML
 const formatRawResponse = (response: any): string => {
   if (typeof response === 'string') {
     return response
