@@ -2,7 +2,7 @@
 import { logger } from '../utils/logger'
 
 // n8n配置 - 已更新为正确的n8n服务地址
-const N8N_BASE_URL = process.env.VITE_N8N_BASE_URL || 'https://ykyyln.app.n8n.cloud' // n8n服务地址
+const N8N_BASE_URL = process.env.VITE_N8N_BASE_URL || 'https://your-n8n-instance.com' // n8n服务地址
 const WEBHOOK_PATH = process.env.VITE_N8N_WEBHOOK_PATH || '/webhook/api/poetry-analysis' // Webhook路径
 const CALLBACK_URL = process.env.VITE_CALLBACK_URL || 'https://strong-baklava-a0b6e8.netlify.app/.netlify/functions/callback' // Netlify Function回调URL
 

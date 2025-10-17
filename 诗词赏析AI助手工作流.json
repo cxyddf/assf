@@ -1,0 +1,160 @@
+{
+  "name": "诗词赏析AI助手工作流",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "/api/poetry-analysis",
+        "responseMode": "responseNode"
+      },
+      "id": "1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "rightValue": ""
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{$json.poetry}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "2",
+      "name": "验证输入数据",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "agent": "deepseek-chat",
+        "messages": [
+          {
+            "role": "system",
+            "content": "你是一位专业的古典诗词赏析专家。请对用户提供的诗词进行详细分析，包括：\n\n1. 逐句翻译（现代汉语）\n2. 主题思想分析\n3. 艺术特色（修辞手法、意境营造等）\n4. 历史背景（如适用）\n5. 作者创作背景和意图\n6. 整体赏析和评价\n\n请用专业、准确的语言进行分析，确保内容详实且有深度。"
+          },
+          {
+            "role": "user",
+            "content": "请分析以下诗词：\n\n{{$json.poetry}}\n\n请按照上述要求提供完整的分析内容。"
+          }
+        ]
+      },
+      "id": "3",
+      "name": "AI Agent",
+      "type": "n8n-nodes-base.llmChatAgent",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "model": "deepseek-chat",
+        "options": {}
+      },
+      "id": "4",
+      "name": "DeepSeek Chat Model",
+      "type": "n8n-nodes-base.llmModel",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 处理AI返回的响应，提取完整的分析内容\nconst aiResponse = $input.first().json.response;\n\n// 检查响应是否包含完整的分析内容\nif (aiResponse && typeof aiResponse === 'string') {\n  // 如果AI返回的是纯文本，直接使用\n  return {\n    success: true,\n    data: {\n      translation: extractSection(aiResponse, '翻译'),\n      theme: extractSection(aiResponse, '主题'),\n      artistic_features: extractSection(aiResponse, '艺术特色'),\n      historical_context: extractSection(aiResponse, '历史背景'),\n      author_insights: extractSection(aiResponse, '作者'),\n      appreciation: extractSection(aiResponse, '赏析')\n    },\n    timestamp: new Date().toISOString()\n  };\n} else if (aiResponse && typeof aiResponse === 'object') {\n  // 如果AI返回的是JSON对象，直接返回\n  return {\n    success: true,\n    data: aiResponse,\n    timestamp: new Date().toISOString()\n  };\n} else {\n  // 如果无法解析响应，返回错误\n  return {\n    success: false,\n    error: '无法解析AI响应',\n    timestamp: new Date().toISOString()\n  };\n}\n\n// 辅助函数：从文本中提取特定部分\nfunction extractSection(text, sectionName) {\n  const regex = new RegExp(`${sectionName}[：:]\\\\s*([^]*?)(?=\\\\n\\\\s*[^：:]*[：:]|$)`);\n  const match = text.match(regex);\n  return match ? match[1].trim() : `暂无${sectionName}信息`;\n}"
+      },
+      "id": "5",
+      "name": "处理AI响应",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "6",
+      "name": "最终响应",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1340, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "验证输入数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "验证输入数据": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "DeepSeek Chat Model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "main": [
+        [
+          {
+            "node": "处理AI响应",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "处理AI响应": {
+      "main": [
+        [
+          {
+            "node": "最终响应",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "triggerCount": 0,
+  "updatedAt": "2024-01-15T10:00:00.000Z",
+  "versionId": "1"
+}
