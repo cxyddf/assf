@@ -248,7 +248,7 @@ export class N8NApiService {
     } catch (error) {
       logger.error('启动异步任务失败:', error)
       // 提供更友好的错误信息
-      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      if (error instanceof Error && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
         throw new Error('网络连接失败，请检查n8n服务地址配置')
       }
       throw error
