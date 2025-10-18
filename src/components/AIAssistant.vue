@@ -13,7 +13,7 @@
     <div v-if="isOpen" class="ai-assistant__window">
       <!-- 头部 -->
       <div class="ai-assistant__header">
-        <h3 style="color: #ff6b35;">诗词赏析AI助手 <span class="version-badge">v-now</span></h3>
+        <h3 style="color: #ff0000; font-size: 20px;">🔥 诗词赏析AI助手 v-now 🔥</h3>
         <button @click="closeAssistant" class="ai-assistant__close">×</button>
       </div>
 
