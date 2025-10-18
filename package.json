@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "import-data": "tsx scripts/import-to-supabase.ts"
+    "import-data": "tsx scripts/import-to-supabase.ts",
+    "vercel-build": "npm run build"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
