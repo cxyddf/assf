@@ -13,7 +13,7 @@
     <div v-if="isOpen" class="ai-assistant__window">
       <!-- 头部 -->
       <div class="ai-assistant__header">
-        <h3>诗词赏析AI助手 <span class="version-badge">v-now</span></h3>
+        <h3 style="color: #ff6b35;">诗词赏析AI助手 <span class="version-badge">v-now</span></h3>
         <button @click="closeAssistant" class="ai-assistant__close">×</button>
       </div>
 
@@ -367,7 +367,7 @@ onUnmounted(() => {
 
 .ai-assistant__header {
   padding: 16px;
-  background: linear-gradient(135deg, #8B4513, #A0522D);
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
   color: white;
   border-radius: 12px 12px 0 0;
   display: flex;
