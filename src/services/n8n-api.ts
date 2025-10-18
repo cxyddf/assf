@@ -2,7 +2,7 @@
 import { logger } from '../utils/logger'
 
 // n8n配置 - 已更新为正确的n8n服务地址
-const N8N_BASE_URL = process.env.VITE_N8N_BASE_URL || 'https://your-n8n-instance.com' // n8n服务地址
+const N8N_BASE_URL = process.env.VITE_N8N_BASE_URL || 'https://ykyyln.app.n8n.cloud' // n8n服务地址
 const WEBHOOK_PATH = process.env.VITE_N8N_WEBHOOK_PATH || '/webhook/api/poetry-analysis' // Webhook路径
 const CALLBACK_URL = process.env.VITE_CALLBACK_URL || 'https://strong-baklava-a0b6e8.netlify.app/.netlify/functions/callback' // Netlify Function回调URL
 
@@ -67,23 +67,8 @@ export class N8NApiService {
    */
   async analyzePoetry(request: PoetryAnalysisRequest): Promise<PoetryAnalysisResponse> {
     try {
-      // 临时返回模拟数据用于测试
-      console.log('使用模拟数据测试AI助手界面')
-      return {
-        success: true,
-        data: {
-          translation: '天气到了傍晚时分，秋意渐浓。',
-          theme: '这首诗表达了诗人对秋日傍晚时光的感悟，体现了对自然变化的敏感和对时光流逝的思考。',
-          artistic_features: '运用了简洁明了的语言，通过"天气晚来秋"这一句，巧妙地捕捉了秋日傍晚的意境。',
-          historical_context: '这首诗创作于古代，反映了当时文人对自然季节变化的细腻观察和深刻感悟。',
-          author_insights: '诗人通过简单的语言表达了对秋日时光的独特感受，体现了古代文人的诗意情怀。',
-          appreciation: '整首诗虽然简短，但意境深远，通过"天气晚来秋"这一句，生动地描绘了秋日傍晚的氛围，让人感受到季节变化的微妙之美。'
-        },
-        timestamp: new Date().toISOString()
-      }
+      console.log('调用n8n工作流进行诗词分析:', `${this.baseUrl}${WEBHOOK_PATH}`)
       
-      // 原始API调用代码（暂时注释）
-      /*
       const response = await fetch(`${this.baseUrl}${WEBHOOK_PATH}`, {
         method: 'POST',
         headers: {
@@ -97,6 +82,7 @@ export class N8NApiService {
       }
 
       const result = await response.json()
+      console.log('n8n工作流响应:', result)
       
       // 检查是否是异步工作流启动响应
       if (result.message === "Workflow was started") {
@@ -111,7 +97,7 @@ export class N8NApiService {
       return result
     } catch (error) {
       logger.error('调用n8n API失败:', error)
-      throw error // 直接抛出错误，不使用后备分析
+      throw error
     }
   }
 
