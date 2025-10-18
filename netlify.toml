@@ -1,11 +1,12 @@
 [build]
   publish = "dist"
   functions = "netlify/functions"
-  command = "npm install --legacy-peer-deps && npm run build"
+  command = "npm install --legacy-peer-deps --production=false && npm run build"
 
 [build.environment]
   NODE_VERSION = "20"
   NODE_ENV = "development"
+  NPM_FLAGS = "--production=false"
 
 [[redirects]]
   from = "/api/callback"
