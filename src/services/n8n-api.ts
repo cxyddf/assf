@@ -67,6 +67,23 @@ export class N8NApiService {
    */
   async analyzePoetry(request: PoetryAnalysisRequest): Promise<PoetryAnalysisResponse> {
     try {
+      // 临时返回模拟数据用于测试
+      console.log('使用模拟数据测试AI助手界面')
+      return {
+        success: true,
+        data: {
+          translation: '天气到了傍晚时分，秋意渐浓。',
+          theme: '这首诗表达了诗人对秋日傍晚时光的感悟，体现了对自然变化的敏感和对时光流逝的思考。',
+          artistic_features: '运用了简洁明了的语言，通过"天气晚来秋"这一句，巧妙地捕捉了秋日傍晚的意境。',
+          historical_context: '这首诗创作于古代，反映了当时文人对自然季节变化的细腻观察和深刻感悟。',
+          author_insights: '诗人通过简单的语言表达了对秋日时光的独特感受，体现了古代文人的诗意情怀。',
+          appreciation: '整首诗虽然简短，但意境深远，通过"天气晚来秋"这一句，生动地描绘了秋日傍晚的氛围，让人感受到季节变化的微妙之美。'
+        },
+        timestamp: new Date().toISOString()
+      }
+      
+      // 原始API调用代码（暂时注释）
+      /*
       const response = await fetch(`${this.baseUrl}${WEBHOOK_PATH}`, {
         method: 'POST',
         headers: {
