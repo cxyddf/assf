@@ -13,7 +13,7 @@
     <div v-if="isOpen" class="ai-assistant__window">
       <!-- 头部 -->
       <div class="ai-assistant__header">
-        <h3>诗词赏析AI助手</h3>
+        <h3>诗词赏析AI助手 <span class="version-badge">v-now</span></h3>
         <button @click="closeAssistant" class="ai-assistant__close">×</button>
       </div>
 
@@ -379,6 +379,14 @@ onUnmounted(() => {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
+}
+
+.version-badge {
+  margin-left: 8px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.2);
+  font-size: 10px;
 }
 
 .ai-assistant__close {
